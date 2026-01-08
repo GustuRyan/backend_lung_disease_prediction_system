@@ -31,8 +31,14 @@ func main() {
 		MaxAge:           12 * time.Hour,
 	}))
 
-	db.AutoMigrate(&User{})
+	db.AutoMigrate(&User{}, &Disease{}, &Dataset{}, &Recommendation{}, &Model{}, &History{}, &DatasetModel{})
 	RegisterUserRoutes(r)
+	RegisterDatasetRouter(r)
+	RegisterDiseaseRouter(r)
+	RegisterModelRouter(r)
+	RegisterRecommendationRouter(r)
+	RegisterHistoryRouter(r)
+	RegisterDatasetModelRouter(r)
 
 	r.GET("/api/hello", func(c *gin.Context) {
 		c.String(200, "Hello from Logistic API!")
