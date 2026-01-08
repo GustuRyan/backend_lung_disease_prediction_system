@@ -13,8 +13,8 @@ type History struct {
 	UserID uint `json:"user_id"`
 	User   User `gorm:"foreignKey:UserID;references:ID"`
 
-	DiseaseID uint    `json:"user_id"`
-	Disease   Disease `gorm:"foreignKey:UserID;references:ID"`
+	DiseaseID uint    `json:"disease_id"`
+	Disease   Disease `gorm:"foreignKey:DiseaseID;references:ID"`
 
 	ImagePath string `json:"image_path"`
 	PredictionResult string `json:"prediction_result"`
@@ -22,21 +22,27 @@ type History struct {
 }
 
 func RegisterHistoryRouter(r *gin.Engine) {
-	
+	r.GET("/api/v1/history/:id", GetAllHistoryHandler)
+	r.POST("/api/v1/history", CreateHistoryHandler)
+	r.PUT("/api/v1/history/:id", UpdateHistoryHandler)
+	r.DELETE("/api/v1/history/:id", DeleteHistoryHandler)
 }
 
 func GetAllHistoryHandler(c *gin.Context) {
-	var historys []History
-	result := db.Preload("User").Preload("Disease").Find(&historys)
+	idStr := c.Param("id")
+	id, _ := strconv.Atoi(idStr)
+
+	var histories []History
+	result := db.Preload("User").Preload("Disease").Where("user_id = ?", id).Find(&histories)
 	if result.Error != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": result.Error.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, historys)
+	c.JSON(http.StatusOK, histories)
 }
 
 func CreateHistoryHandler(c *gin.Context) {
-	var history []History
+	var history History
 	if err := c.ShouldBindJSON(&history); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
