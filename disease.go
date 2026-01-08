@@ -18,7 +18,6 @@ func RegisterDiseaseRouter(r *gin.Engine) {
 	r.GET("/api/v1/disease", GetAllDiseaseHandler)
     r.POST("/api/v1/disease", CreateDiseaseHandler)
 
-    // Auth
     r.PUT("/api/v1/disease/:id", UpdateDiseaseHandler)
     r.DELETE("/api/v1/disease/:id", DeleteDiseaseHandler)
 }
