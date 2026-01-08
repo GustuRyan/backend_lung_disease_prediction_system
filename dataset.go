@@ -16,12 +16,14 @@ type Dataset struct {
 
 	DatasetName string `json:"dataset_name"`
 	FilePath    string `json:"file_path"`
-	UploadDate  string `json:"upload_date"`
 	Description string `json:"description"`
 }
 
 func RegisterDatasetRouter(r *gin.Engine) {
-	
+	r.GET("/api/v1/dataset", GetAllDatasetHandler)
+	r.POST("/api/v1/dataset", CreateDatasetHandler)
+	r.PUT("/api/v1/dataset/:id", UpdateDatasetHandler)
+	r.DELETE("/api/v1/dataset/:id", DeleteDatasetHandler)
 }
 
 func GetAllDatasetHandler(c *gin.Context) {
@@ -35,7 +37,7 @@ func GetAllDatasetHandler(c *gin.Context) {
 }
 
 func CreateDatasetHandler(c *gin.Context) {
-	var dataset []Dataset
+	var dataset Dataset
 	if err := c.ShouldBindJSON(&dataset); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
