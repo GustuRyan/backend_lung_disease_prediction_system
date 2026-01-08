@@ -16,6 +16,7 @@ type Disease struct {
 
 func RegisterDiseaseRouter(r *gin.Engine) {
 	r.GET("/api/v1/disease", GetAllDiseaseHandler)
+	r.GET("/api/v1/disease/:name", GetDiseaseByNameHandler)
     r.POST("/api/v1/disease", CreateDiseaseHandler)
 
     r.PUT("/api/v1/disease/:id", UpdateDiseaseHandler)
@@ -31,8 +32,20 @@ func GetAllDiseaseHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, diseases)
 }
 
+func GetDiseaseByNameHandler(c *gin.Context) {
+	nameStr := c.Param("name")
+	name, _ := strconv.Atoi(nameStr)
+
+	var diseases Disease
+	if err := db.Where("disease_name = ?", name).Find(&diseases).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, diseases)
+}
+
 func CreateDiseaseHandler(c *gin.Context) {
-	var disease []Disease
+	var disease Disease
 	if err := c.ShouldBindJSON(&disease); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
